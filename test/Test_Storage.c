@@ -70,3 +70,8 @@ void test_dataStored()
 	TEST_ASSERT(Storage_ReadBuffer(5, readBuffer, 20) == true);
 	TEST_ASSERT_EQUAL_UINT8_ARRAY(buffer, readBuffer, 20);
 }
+
+void test_print()
+{
+	Storage_PrintMemory(0x100);
+}

@@ -1,4 +1,5 @@
 #include "unity.h"
+#include "storage.h"
 
 void setUp()
 {
@@ -8,7 +9,8 @@ void tearDown()
 {
 }
 
-void test_firtsTest()
+void test_InitStorage()
 {
-	TEST_ASSERT(0);
+	bool result = Storage_Init();
+	TEST_ASSERT(result);
 }

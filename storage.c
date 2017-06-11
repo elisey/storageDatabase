@@ -1,26 +1,44 @@
 #include "storage.h"
+#include <stdio.h>
 
-#define FILE_NAME		"myData.bin"
-#define MEMORY_SIZE		(64*1024)
+#ifndef UNITTESTS
+    #define STATIC
+#else
+    #define STATIC static
+#endif
+
+#define FILE_NAME		"myData.txt"
+#define MEMORY_SIZE		(64 * 1024)
 uint8_t memory[MEMORY_SIZE];
 
-static int writeDataToFile();
-static int readDataFromFile();
+STATIC bool writeDataToFile();
+STATIC bool readDataFromFile();
 
 bool Storage_Init()
 {
-	return false;
-	return (readDataFromFile() >= 0);
+	bool result = readDataFromFile();
+	return result;
 }
 
-int Storage_WriteBuffer(size_t address, uint8_t *buffer, size_t bufferSize)
+bool Storage_WriteBuffer(size_t address, uint8_t *buffer, size_t bufferSize)
 {
-	return -1;
+	if (address + bufferSize > MEMORY_SIZE)
+	{
+		return false;
+	}
+	memcpy((&memory[address]), buffer, bufferSize);
+	bool result = writeDataToFile();
+	return result;
 }
 
-int Storage_ReadBuffer(size_t address, uint8_t *buffer, size_t bufferSize)
+bool Storage_ReadBuffer(size_t address, uint8_t *buffer, size_t bufferSize)
 {
-	return -1;
+	if (address + bufferSize > MEMORY_SIZE)
+	{
+		return false;
+	}
+	memcpy(buffer, (&memory[address]), bufferSize);
+	return true;
 }
 
 size_t Storage_GetMemorySize()
@@ -28,18 +46,28 @@ size_t Storage_GetMemorySize()
 	return MEMORY_SIZE;
 }
 
-static int writeDataToFile()
+STATIC bool writeDataToFile()
 {
-	return -1;
+	FILE *fp;
+	fp = fopen(FILE_NAME, "w+");
+	if (fp == 0)
+	{
+		return -1;
+	}
+	size_t numOfWrittenBytes = fwrite((const void*)memory, 1, MEMORY_SIZE, fp);
+	fclose(fp);
+	return numOfWrittenBytes == MEMORY_SIZE;
 }
 
-static int readDataFromFile()
+STATIC bool readDataFromFile()
 {
-	return -1;
-	/*FILE *fp;
+	FILE *fp;
 	fp = fopen(FILE_NAME, "r");
-
-	size_t fread(void *ptr, size_t size_of_elements, size_t number_of_elements, FILE *a_file);
-
-	size_t numOfReadBytes = fread((void*)memory, 1, MEMORY_SIZE, fp);*/
+	if (fp == 0)
+	{
+		return -1;
+	}
+	fread((void*)memory, 1, MEMORY_SIZE, fp);
+	fclose(fp);
+	return true;
 }
